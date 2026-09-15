@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat — automação de operações para times pequenos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --white:#FFFFFF;
+    --paper:#F4F8FD;
+    --ink:#0B2545;
+    --blue:#1D5FCC;
+    --blue-deep:#123A87;
+    --sky:#BFD9FF;
+    --line:#D9E4F5;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--white);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3, .display{
+    font-family:'Space Grotesk', sans-serif;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+
+  a{color:inherit; text-decoration:none;}
+
+  .wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(255,255,255,0.88);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:76px;
+  }
+  .logo{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:22px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .logo-mark{
+    width:12px; height:12px;
+    background:var(--blue);
+    border-radius:2px;
+    transform:rotate(45deg);
+  }
+  .nav-links{
+    display:flex;
+    gap:36px;
+    font-size:15px;
+    font-weight:500;
+    color:var(--blue-deep);
+  }
+  .nav-links a:hover{ color:var(--blue); }
+  .nav-cta{
+    background:var(--ink);
+    color:var(--white);
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+    transition:background 0.2s ease;
+  }
+  .nav-cta:hover{ background:var(--blue); }
+  .nav-toggle, .mobile-links{ display:none; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:96px 0 72px;
+    background:var(--white);
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:56px;
+    align-items:center;
+  }
+  .eyebrow-line{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    color:var(--blue-deep);
+    margin-bottom:22px;
+  }
+  .eyebrow-dot{
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--blue);
+  }
+  h1.display{
+    font-size:56px;
+    font-weight:600;
+    line-height:1.08;
+    max-width:15ch;
+  }
+  .hero p.lead{
+    margin-top:24px;
+    font-size:18px;
+    color:#3E5470;
+    max-width:42ch;
+  }
+  .hero-actions{
+    margin-top:36px;
+    display:flex;
+    align-items:center;
+    gap:22px;
+  }
+  .btn-primary{
+    background:var(--blue);
+    color:var(--white);
+    padding:14px 26px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:15px;
+    display:inline-block;
+    transition:background 0.2s ease, transform 0.2s ease;
+  }
+  .btn-primary:hover{ background:var(--blue-deep); transform:translateY(-1px); }
+  .link-secondary{
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink);
+    border-bottom:1px solid var(--ink);
+    padding-bottom:2px;
+  }
+  .hero-note{
+    margin-top:28px;
+    font-size:13px;
+    color:#7488A6;
+  }
+
+  /* Hero illustration: abstract flow lines converging */
+  .hero-art{
+    position:relative;
+    aspect-ratio:1/1;
+  }
+
+  /* ---------- Logos strip ---------- */
+  .logos{
+    padding:36px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .logos-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:24px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    color:#9FB3CC;
+  }
+
+  /* ---------- Features ---------- */
+  .section{ padding:100px 0; }
+  .section-head{
+    max-width:34ch;
+    margin-bottom:64px;
+  }
+  .section-head h2{
+    font-size:34px;
+    font-weight:600;
+    line-height:1.2;
+  }
+  .section-head p{
+    margin-top:16px;
+    color:#3E5470;
+    font-size:16px;
+  }
+
+  .feature-list{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+  }
+  .feature{
+    padding:32px 28px 32px 0;
+    border-top:1px solid var(--line);
+  }
+  .feature:nth-child(1){ border-left:none; }
+  .feature + .feature{ border-left:1px solid var(--line); padding-left:28px; }
+  .feature-index{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:13px;
+    color:var(--blue);
+    font-weight:600;
+    margin-bottom:18px;
+  }
+  .feature h3{
+    font-size:19px;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  .feature p{
+    font-size:15px;
+    color:#3E5470;
+  }
+
+  /* ---------- How it works ---------- */
+  .how{
+    background:var(--paper);
+  }
+  .how-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:64px;
+    align-items:start;
+  }
+  .steps{ counter-reset: step; }
+  .step{
+    display:grid;
+    grid-template-columns:40px 1fr;
+    gap:18px;
+    padding:28px 0;
+  }
+  .step + .step{ border-top:1px solid var(--line); }
+  .step-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--blue);
+  }
+  .step h3{ font-size:17px; font-weight:600; margin-bottom:6px; }
+  .step p{ font-size:15px; color:#3E5470; }
+
+  .panel{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:36px;
+  }
+  .panel-label{
+    font-size:13px;
+    color:#7488A6;
+    margin-bottom:18px;
+  }
+  .bar-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .bar-row span{
+    width:78px;
+    font-size:13px;
+    color:#3E5470;
+    flex-shrink:0;
+  }
+  .bar-track{
+    flex:1;
+    height:10px;
+    background:var(--paper);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    background:var(--blue);
+    border-radius:6px;
+  }
+  .panel-foot{
+    margin-top:24px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:#7488A6;
+  }
+  .panel-foot strong{ color:var(--ink); font-size:15px; }
+
+  /* ---------- Stat band ---------- */
+  .stats{
+    padding:88px 0;
+    background:var(--ink);
+    color:var(--white);
+  }
+  .stats-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:40px;
+  }
+  .stat-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:44px;
+    font-weight:600;
+    color:var(--sky);
+  }
+  .stat-label{
+    margin-top:10px;
+    font-size:15px;
+    color:#A9BEDD;
+    max-width:26ch;
+  }
+
+  /* ---------- Quote ---------- */
+  .quote-section{ padding:100px 0; }
+  blockquote{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:30px;
+    font-weight:500;
+    line-height:1.4;
+    max-width:26ch;
+  }
+  .quote-attr{
+    margin-top:28px;
+    font-size:15px;
+    color:#3E5470;
+  }
+  .quote-attr strong{ color:var(--ink); }
+
+  /* ---------- CTA ---------- */
+  .cta{
+    padding:110px 0 120px;
+    background:var(--paper);
+    text-align:center;
+  }
+  .cta h2{
+    font-size:38px;
+    font-weight:600;
+    max-width:20ch;
+    margin:0 auto;
+  }
+  .cta p{
+    margin:20px auto 0;
+    color:#3E5470;
+    max-width:40ch;
+  }
+  .cta-actions{
+    margin-top:36px;
+    display:flex;
+    justify-content:center;
+    gap:22px;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    padding:48px 0;
+    border-top:1px solid var(--line);
+  }
+  .foot-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:20px;
+  }
+  .foot-links{
+    display:flex;
+    gap:28px;
+    font-size:14px;
+    color:#3E5470;
+  }
+  .foot-copy{
+    font-size:13px;
+    color:#9FB3CC;
+  }
+
+  @media (max-width: 860px){
+    .wrap{ padding:0 22px; }
+    .nav-links{ display:none; }
+    h1.display{ font-size:38px; max-width:none; }
+    .hero-grid{ grid-template-columns:1fr; gap:48px; }
+    .hero-art{ order:-1; max-width:260px; margin:0 auto; }
+    .feature-list{ grid-template-columns:1fr; }
+    .feature, .feature + .feature{ border-left:none; padding-left:0; }
+    .how-grid{ grid-template-columns:1fr; gap:40px; }
+    .stats-grid{ grid-template-columns:1fr; gap:32px; }
+    blockquote{ font-size:24px; }
+    .cta h2{ font-size:28px; }
+    .cta-actions{ flex-direction:column; align-items:center; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; scroll-behavior:auto !important; }
+  }
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--blue);
+    outline-offset:2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo"><img src="Fotos do site/Logomarca.png" alt="Chat" style="width:28px; height:28px; object-fit:contain;">Chat</div>
+    <nav class="nav-links">
+      <a href="#produto">Produto</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#resultados">Resultados</a>
+    </nav>
+    <a href="#cta" class="nav-cta">Testar grátis</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow-line"><span class="eyebrow-dot"></span>Para operações que ainda vivem em planilha</div>
+      <h1 class="display">O trabalho manual da sua equipe, organizado num só lugar.</h1>
+      <p class="lead">O Chat conecta pedidos, aprovações e tarefas recorrentes num fluxo automático — sem exigir uma linha de código do seu time.</p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn-primary">Começar agora</a>
+        <a href="#como-funciona" class="link-secondary">Ver como funciona</a>
+      </div>
+      <p class="hero-note">Grátis por 14 dias. Sem cartão de crédito.</p>
+    </div>
+    <div class="hero-art">
+      <img src="fotos do site/Chat bot cartaz.png" alt="ChatBot — Seu negócio mais eficiente com Inteligência que conversa" style="display:block; width:100%; height:auto; border-radius:12px;">
+    </div>
+  </div>
+</section>
+
+<div class="logos">
+  <div class="wrap logos-row">
+    <span>Cedro Log&iacute;stica</span>
+    <span>Norte Contábil</span>
+    <span>Pátio Varejo</span>
+    <span>Ilha Clínicas</span>
+    <span>Trilha Educação</span>
+  </div>
+</div>
+
+<section class="section" id="produto">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Três peças, um único fluxo</h2>
+      <p>Cada equipe tem sua própria bagunça. O Chat se adapta a ela, não o contrário.</p>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <div class="feature-index">01</div>
+        <h3>Formulários que viram tarefas</h3>
+        <p>Qualquer pedido — compra, férias, orçamento — entra por um formulário simples e já nasce como tarefa atribuída à pessoa certa.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-index">02</div>
+        <h3>Aprovações sem trocar de aba</h3>
+        <p>Quem aprova recebe um aviso direto, com todo o contexto necessário, e decide em um clique — sem abrir planilha nenhuma.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-index">03</div>
+        <h3>Regras que rodam sozinhas</h3>
+        <p>Defina uma vez o que deve acontecer depois de cada aprovação. O Chat repete o processo sem precisar de lembrete.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section how" id="como-funciona">
+  <div class="wrap how-grid">
+    <div>
+      <div class="section-head" style="margin-bottom:8px;">
+        <h2>Do pedido à conclusão, em quatro passos</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div>
+            <h3>Alguém abre um pedido</h3>
+            <p>Um formulário curto, pensado para o seu processo — não um genérico de mercado.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div>
+            <h3>O Chat identifica o responsável</h3>
+            <p>Com base em regras que você define, a tarefa cai direto na fila certa.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div>
+            <h3>A aprovação acontece em minutos</h3>
+            <p>Notificações diretas eliminam o "cadê aquele e-mail?".</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div>
+            <h3>Tudo fica registrado</h3>
+            <p>Histórico completo, sem precisar perguntar quem fez o quê.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Painel da semana — Time Operações</div>
+      <div class="bar-row"><span>Pedidos</span><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div></div>
+      <div class="bar-row"><span>Aprovados</span><div class="bar-track"><div class="bar-fill" style="width:64%"></div></div></div>
+      <div class="bar-row"><span>Pendentes</span><div class="bar-track"><div class="bar-fill" style="width:18%"></div></div></div>
+      <div class="bar-row"><span>Concluídos</span><div class="bar-track"><div class="bar-fill" style="width:71%"></div></div></div>
+      <div class="panel-foot">
+        <span>Tempo médio de aprovação</span>
+        <strong>3h 40min</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats" id="resultados">
+  <div class="wrap stats-grid">
+    <div>
+      <div class="stat-num">6h</div>
+      <div class="stat-label">economizadas por semana, em média, por pessoa que aprova pedidos</div>
+    </div>
+    <div>
+      <div class="stat-num">92%</div>
+      <div class="stat-label">dos pedidos resolvidos no mesmo dia após a adoção do Chat</div>
+    </div>
+    <div>
+      <div class="stat-num">3 dias</div>
+      <div class="stat-label">tempo médio para colocar o primeiro fluxo no ar, sem ajuda técnica</div>
+    </div>
+  </div>
+</section>
+
+<section class="quote-section">
+  <div class="wrap">
+    <blockquote>"Paramos de perguntar 'isso já foi aprovado?' em todo grupo de WhatsApp da empresa."</blockquote>
+    <div class="quote-attr"><strong>Renata Aquino</strong> — Gerente de Operações, Pátio Varejo</div>
+  </div>
+</section>
+
+<section class="cta" id="cta">
+  <div class="wrap">
+    <h2>Organize o próximo pedido antes que ele vire bagunça</h2>
+    <p>Leve 15 minutos para montar seu primeiro fluxo. Sem compromisso, sem cartão.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary">Criar conta grátis</a>
+      <a href="#" class="link-secondary">Falar com o time</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <div class="logo"><img src="Fotos do site/Logomarca.png" alt="Chat" style="width:28px; height:28px; object-fit:contain;">Chat</div>
+    <div class="foot-links">
+      <a href="#produto">Produto</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#resultados">Resultados</a>
+    </div>
+    <div class="foot-copy">© 2026 Chat. Feito para equipes pequenas.</div>
+  </div>
+</footer>
+
+</body>
+</html>
